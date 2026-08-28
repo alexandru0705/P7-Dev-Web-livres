@@ -69,7 +69,13 @@ const optimiseImage = (req, res, next) => {
     })
     .catch((err) => {
       console.error('Image optimisation failed:', err);
-      next(new Error('Image processing failed'));
+      // Clean up the partial file, then reject with a 400:
+      // the client declared a valid mimetype but the bytes were not
+      // a real image (or the file is corrupted).
+      fs.unlink(inputPath, () => {});
+      const badImage = new Error('The uploaded file is not a valid image.');
+      badImage.status = 400;
+      next(badImage);
     });
 };
 

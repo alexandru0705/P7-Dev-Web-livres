@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   getBooks,
   getBook,
+  getBestRatedBooks,
   createBook,
   updateBook,
   deleteBook,
@@ -14,11 +15,14 @@ const auth = require('../Middlewares/auth');
 
 // ── Public routes (no auth required) ────────────────────────────────
 router.get('/', getBooks);
+// NB: "bestrating" is a static route and MUST be declared before "/:id",
+// otherwise Express would match it as a book id and 404.
+router.get('/bestrating', getBestRatedBooks);
 router.get('/:id', getBook);
 
 // ── Protected routes (auth middleware runs first) ───────────────────
-router.post('/', auth, upload.single('cover'), optimiseImage, createBook);
-router.put('/:id', auth, upload.single('cover'), optimiseImage, updateBook);
+router.post('/', auth, upload.single('image'), optimiseImage, createBook);
+router.put('/:id', auth, upload.single('image'), optimiseImage, updateBook);
 router.delete('/:id', auth, deleteBook);
 
 // ── Rating (protected) ──────────────────────────────────────────────

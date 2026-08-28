@@ -20,6 +20,13 @@ function SignIn({ setUser }) {
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState({ error: false, message: '' });
   const signIn = async () => {
+    if (!email || !password) {
+      setNotification({
+        error: true,
+        message: 'Veuillez remplir tous les champs.',
+      });
+      return;
+    }
     try {
       setIsLoading(true);
       const response = await axios({
@@ -40,7 +47,10 @@ function SignIn({ setUser }) {
       }
     } catch (err) {
       console.log(err);
-      setNotification({ error: true, message: err.message });
+      setNotification({
+        error: true,
+        message: err.response?.data?.error || err.message,
+      });
       console.log('Some error occured during signing in: ', err);
     } finally {
       setIsLoading(false);
@@ -48,6 +58,13 @@ function SignIn({ setUser }) {
   };
 
   const signUp = async () => {
+    if (!email || !password) {
+      setNotification({
+        error: true,
+        message: 'Veuillez remplir tous les champs.',
+      });
+      return;
+    }
     try {
       setIsLoading(true);
       const response = await axios({
@@ -64,7 +81,10 @@ function SignIn({ setUser }) {
       }
       setNotification({ error: false, message: 'Votre compte a bien été créé, vous pouvez vous connecter' });
     } catch (err) {
-      setNotification({ error: true, message: err.message });
+      setNotification({
+        error: true,
+        message: err.response?.data?.error || err.message,
+      });
       console.log('Some error occured during signing up: ', err);
     } finally {
       setIsLoading(false);

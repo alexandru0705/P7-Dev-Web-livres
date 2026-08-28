@@ -2,10 +2,9 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const connectDB = require('./Config/db');
-
 // ── 1. Connect to MongoDB BEFORE anything else ──────────────────────
-connectDB();
+// Only start accepting traffic once the DB connection is ready
+const connectDB = require('./Config/db');
 
 const app = express();
 
@@ -28,7 +27,7 @@ app.use('/images', express.static(path.join(__dirname, 'Images')));
 const userRoutes = require('./Routes/user');
 const bookRoutes = require('./Routes/book');
 
-app.use('/api/users', userRoutes);
+app.use('/api/auth', userRoutes);
 app.use('/api/books', bookRoutes);
 
 // ── 5. Health-check endpoint (useful for monitoring) ────────────────
@@ -43,10 +42,14 @@ app.use((req, res) => {
 
 // ── 7. Centralised error handler (MUST be 4 args for Express to catch it) ──
 app.use((err, req, res, next) => {
+  // Multer errors (e.g. rejected file type, size limit)
+  if (err.name === 'MulterError') {
+    return res.status(400).json({ error: err.message });
+  }
   console.error(err.stack);
   res.status(err.status || 500).json({
     error: err.message || 'Internal Server Error',
   });
 });
 
-module.exports = app;
+module.exports = { app, connectDB };

@@ -54,7 +54,7 @@ function Book() {
     // eslint-disable-next-line no-restricted-globals
     const check = confirm('Etes vous sûr de vouloir supprimer ce livre ?');
     if (check) {
-      const del = await deleteBook(book.id);
+      const del = await deleteBook(book._id);
       if (del) {
         setBook((oldValue) => ({ ...oldValue, delete: true }));
       }
@@ -72,7 +72,7 @@ function Book() {
             <div className={styles.Owner}>
               <p>Vous avez publié cet ouvrage, vous pouvez le :</p>
               <p>
-                <Link to={`/livre/modifier/${book.id}`}>modifier</Link>
+                <Link to={`/livre/modifier/${book._id}`}>modifier</Link>
                 {' '}
                 <span tabIndex={0} role="button" onKeyUp={onDelete} onClick={onDelete}>supprimer</span>
                 {' '}
